@@ -1,13 +1,14 @@
 import "./App.scss";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import Routine from "./components/Routine/Routine";
 import New from "./components/New/New";
 import { useEffect, useState } from "react";
-import Edit from "./components/Edit/Edit";
 import localStorageService from "./shared/services/localStorageService";
 
 function App() {
   const [exercises, setExercises] = useState([]);
+
+  const navigate = useNavigate();
 
   const localStorage = new localStorageService();
 
@@ -26,7 +27,7 @@ function App() {
     return (values) => {
       setExercises((oldValue) => {
         const updatedValue = oldValue.map((v) => {
-          return v.id.toString() === id ? values : v;
+          return v.id === id ? values : v;
         });
 
         localStorage.setItem("routine", updatedValue);
@@ -58,13 +59,23 @@ function App() {
         <Route
           path="/"
           element={
-            <Routine exercises={exercises} removeExercise={removeExercise} />
+            <Routine
+              exercises={exercises}
+              removeExercise={removeExercise}
+              editExercise={editExercise}
+            />
           }
         />
-        <Route path="/new" element={<New addExercise={addExercise} />} />
         <Route
-          path="/edit/:id"
-          element={<Edit editExercise={editExercise} removeExercise={removeExercise} exercises={exercises} />}
+          path="/new"
+          element={
+            <New
+              addExercise={addExercise}
+              callback={() => {
+                navigate("/");
+              }}
+            />
+          }
         />
         <Route path="*" element={<Routine />} />
       </Routes>
