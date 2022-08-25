@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import DefaultButton from "../DefaultButton/DefaultButton";
-import Timer from "../services/timer";
 import "./ExerciseForm.scss";
 
 const ExerciseForm = ({
@@ -47,8 +46,7 @@ const ExerciseForm = ({
       name: formData.name,
       reps: exerciseType === "reps" ? parseInt(formData.reps) : 0,
       time: exerciseType === "time" ? parseInt(formData.time) : 0,
-      rest: parseInt(formData.rest),
-      completionF: new Timer(parseInt(formData.time)),
+      rest: parseInt(formData.rest)
     });
 
     callbackFunction();

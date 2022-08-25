@@ -16,51 +16,6 @@
   overflow-x: hidden;
   overflow-y: auto;
 
-  .play {
-    position: fixed;
-    bottom: 2rem;
-    right:0%;
-    transform: translateX(-50%);
-
-    width: 4rem;
-    height: 4rem;
-    border-radius: 50%;
-
-    font-size: 2rem;
-
-    display:flex;
-    justify-content: center;
-    align-items: center;
-
-    background-color: green;
-    border: none;
-    outline: none;
-    color: white;
-  }
-
-  .reset {
-    position: fixed;
-    bottom: 2rem;
-    right:5rem;
-    transform: translateX(-50%);
-
-    width: 4rem;
-    height: 4rem;
-    border-radius: 50%;
-
-    font-size: 2rem;
-
-    display:flex;
-    justify-content: center;
-    align-items: center;
-
-    background-color: grey;
-    border: none;
-    outline: none;
-    color: white;
-
-  }
-
   .counter {
     position: fixed;
     bottom: 2rem;

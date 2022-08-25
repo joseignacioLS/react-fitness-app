@@ -136,6 +136,7 @@ const Routine = ({ exercises, removeExercise, editExercise }) => {
       <DefaultButton
         onClickFunction={togglePlay}
         style={{
+          zIndex:10,
           backgroundColor: play ? "red" : "green",
           position: "fixed",
           bottom: "2rem",
