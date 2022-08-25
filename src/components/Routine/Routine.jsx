@@ -9,7 +9,7 @@ const playTrackerInitialState = {
   exercise: 0,
 };
 
-const Routine = ({ exercises, removeExercise }) => {
+const Routine = ({ exercises, removeExercise, editExercise }) => {
   const [play, setPlay] = useState(false);
   const [pause, setPause] = useState(false);
   const navigate = useNavigate();
@@ -100,6 +100,7 @@ const Routine = ({ exercises, removeExercise }) => {
             pause={pause}
             exercise={exercise}
             removeExercise={removeExercise}
+            editExercise={editExercise}
             currentExercise={playTracker.exercise}
             nextExercise={nextExercise}
             changeCurrentExercise={changeCurrentExercise}
