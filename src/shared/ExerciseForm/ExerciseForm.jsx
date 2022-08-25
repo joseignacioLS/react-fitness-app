@@ -1,9 +1,16 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import DefaultButton from "../DefaultButton/DefaultButton";
 import Timer from "../services/timer";
 import "./ExerciseForm.scss";
 
-const ExerciseForm = ({ submitFunction, cancelFunction, data }) => {
+const ExerciseForm = ({
+  submitFunction,
+  cancelFunction,
+  removeFunction,
+  data,
+  canDelete,
+}) => {
   const navigate = useNavigate();
   const [exerciseType, setExerciseType] = useState(
     data && data.reps ? "reps" : "time"
@@ -39,9 +46,9 @@ const ExerciseForm = ({ submitFunction, cancelFunction, data }) => {
     submitFunction({
       id: formData.id,
       name: formData.name,
-      reps: exerciseType === "reps" ? formData.reps : 0,
-      time: exerciseType === "time" ? formData.time : 0,
-      rest: formData.rest,
+      reps: exerciseType === "reps" ? parseInt(formData.reps) : 0,
+      time: exerciseType === "time" ? parseInt(formData.time) : 0,
+      rest: parseInt(formData.rest),
       completionF: new Timer(parseInt(formData.time)),
     });
     navigate("/");
@@ -51,7 +58,6 @@ const ExerciseForm = ({ submitFunction, cancelFunction, data }) => {
     <>
       {formData?.name !== undefined && (
         <form className="form">
-
           <div className="input-block">
             <label htmlFor="name">Exercise Name</label>
             <input
@@ -107,8 +113,45 @@ const ExerciseForm = ({ submitFunction, cancelFunction, data }) => {
               onChange={handleInput}
             ></input>
           </div>
-          <button onClick={handleSubmit}>Save</button>
-          <button onClick={cancelFunction}>Back</button>
+          <DefaultButton
+            onClickFunction={handleSubmit}
+            style={{
+              width: "4rem",
+              height: "2rem",
+              fontSize: "1rem",
+              borderRadius: ".5rem",
+              backgroundColor: "green",
+            }}
+            content="Save"
+          />
+          {canDelete && (
+            <DefaultButton
+              onClickFunction={() => {
+                console.log(data.id)
+                removeFunction(data.id);
+                navigate("/");
+              }}
+              style={{
+                width: "4rem",
+                height: "2rem",
+                fontSize: "1rem",
+                borderRadius: ".5rem",
+                backgroundColor: "red",
+              }}
+              content="Delete"
+            />
+          )}
+          <DefaultButton
+            onClickFunction={cancelFunction}
+            style={{
+              width: "4rem",
+              height: "2rem",
+              fontSize: "1rem",
+              borderRadius: ".5rem",
+              backgroundColor: "grey",
+            }}
+            content="Back"
+          />
         </form>
       )}
     </>

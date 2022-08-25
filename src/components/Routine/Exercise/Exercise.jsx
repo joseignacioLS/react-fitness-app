@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Exercise.scss";
+import variables from "../../../style/_variables.scss";
 
 const Exercise = ({
   exercise: { id, name, reps, time, rest },
   play,
   pause,
-  removeExercise,
   currentExercise,
   nextExercise,
   changeCurrentExercise,
+  touchedCard,
+  setTouchedCard,
 }) => {
   const navigate = useNavigate();
 
@@ -45,8 +47,12 @@ const Exercise = ({
     });
   };
 
+  const handleTouchStart = (e) => {
+    setTouchedCard(id);
+    if (!play) changeCurrentExercise(id);
+  };
+
   const handleTouchMove = (e) => {
-    if (name === "New") return 0;
     if (play) return setDrag(0);
 
     const newClick = e.touches[0].clientX;
@@ -65,11 +71,8 @@ const Exercise = ({
     if (drag > 50) setDrag(50);
     if (drag < -50) setDrag(-50);
 
-    if (reps > 0 && play) {
+    if (reps > 0 && play && selected && !pause) {
       generateTimerInterval(setRestTimer, rest, nextExercise);
-    }
-    if (!play && name !== "New") {
-      changeCurrentExercise(id);
     }
   };
 
@@ -92,12 +95,38 @@ const Exercise = ({
 
     if (!selected) return;
 
-    if (time > 0) {
+    if (time > 0 && !pause) {
       generateTimerInterval(setTimer, time, () => {
         generateTimerInterval(setRestTimer, rest, nextExercise);
       });
     }
   }, [play, currentExercise]);
+
+  useEffect(() => {
+    if (touchedCard !== id) {
+      setDrag(0);
+    }
+  }, [touchedCard]);
+
+  useEffect(() => {
+    if (pause) {
+      clearInterval(timer.interval);
+      clearInterval(restTimer.interval);
+    } else {
+      if (!play || !selected) return;
+
+      if (timer.current / 1000 >= time) {
+        generateTimerInterval(setRestTimer, rest, nextExercise);
+        return;
+      }
+      if (restTimer.current === 0) {
+        generateTimerInterval(setTimer, time, () => {
+          generateTimerInterval(setRestTimer, rest, nextExercise);
+        });
+        return;
+      }
+    }
+  }, [pause]);
 
   return (
     <section
@@ -108,7 +137,6 @@ const Exercise = ({
     >
       {name !== "New" && (
         <article className="card-back">
-          <span onClick={() => removeExercise(id)}>❌</span>
           <span onClick={() => navigate(`/edit/${id}`)}>✏</span>
         </article>
       )}
@@ -123,12 +151,17 @@ const Exercise = ({
             ? `linear-gradient(to right,
             lightgrey ${restTimer.current / rest / 10}%,
             orange ${restTimer.current / rest / 10}%,
-            orange ${time > 0 ? timer.current / time / 10 : 100}%,
-            white ${time > 0 ? timer.current / time / 10 : 100}%)`
+            orange ${
+              time > 0 ? timer.current / time / 10 : selected ? 100 : 0
+            }%,
+            ${variables.mainColor} ${
+                time > 0 ? timer.current / time / 10 : selected ? 100 : 0
+              }%)`
             : selected
             ? "lightgreen"
             : "",
         }}
+        onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >

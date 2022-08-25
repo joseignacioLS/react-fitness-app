@@ -3,15 +3,17 @@ import { useNavigate, useParams } from "react-router-dom";
 import ExerciseForm from "../../shared/ExerciseForm/ExerciseForm";
 import "./Edit.scss";
 
-const Edit = ({ editExercise, exercises }) => {
+const Edit = ({ editExercise, removeExercise, exercises }) => {
   const navigate = useNavigate();
   const { id } = useParams();
-  console.log(id);
+
   return (
     <>
       <ExerciseForm
         submitFunction={editExercise(id)}
+        canDelete={true}
         cancelFunction={() => navigate("/")}
+        removeFunction={removeExercise}
         data={exercises[id]}
       />
     </>

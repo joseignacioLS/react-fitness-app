@@ -64,7 +64,7 @@ function App() {
         <Route path="/new" element={<New addExercise={addExercise} />} />
         <Route
           path="/edit/:id"
-          element={<Edit editExercise={editExercise} exercises={exercises} />}
+          element={<Edit editExercise={editExercise} removeExercise={removeExercise} exercises={exercises} />}
         />
         <Route path="*" element={<Routine />} />
       </Routes>
