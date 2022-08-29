@@ -1,0 +1,25 @@
+.slider {
+  position: relative;
+  cursor: pointer;
+  width: 8rem;
+  height: 4rem;
+  border-radius: 2rem;
+  background-color: rgb(235, 232, 232);
+  transition: 0.4s;
+
+  &:before {
+    position: absolute;
+    content: "";
+    height: 3.5rem;
+    width: 3.5rem;
+    border-radius: 50%;
+    left: 4px;
+    bottom: 4px;
+    background-color: rgb(255, 178, 127);
+    transition: 0.4s;
+  }
+  &__on:before {
+    transform: translateX(4rem);
+    background-color: aquamarine;
+  }
+}

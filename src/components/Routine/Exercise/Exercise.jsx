@@ -1,40 +1,36 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import "./Exercise.scss";
 import variables from "../../../style/_variables.scss";
 import ExerciseForm from "../../../shared/ExerciseForm/ExerciseForm";
 
 const Exercise = ({
-  exercise,
-  exercise: { id, name, reps, time, rest },
+  data,
+  data: { id, name, reps, time, rest },
   play,
   pause,
   currentExercise,
   nextExercise,
-  changeCurrentExercise,
   touchedCard,
-  setTouchedCard,
   editExercise,
   removeExercise,
+  routineId,
+  isRight,
+  isLeft,
+  touch,
+  routineLoop,
 }) => {
-  const navigate = useNavigate();
-
-  const [click, setClick] = useState(undefined);
-  const [drag, setDrag] = useState(0);
-
   const [timer, setTimer] = useState({
     current: 0,
-    interval: null,
+    interval: undefined,
   });
 
   const [restTimer, setRestTimer] = useState({
     current: 0,
-    interval: null,
+    interval: undefined,
   });
 
   const [isEdit, setIsEdit] = useState(false);
-
-  const selected = currentExercise === id;
+  const selected = currentExercise[0] === routineId && currentExercise[1] === id
 
   const generateTimerInterval = (setTimer, time, callback = () => {}) => {
     const interval = setInterval(() => {
@@ -42,7 +38,12 @@ const Exercise = ({
         const newValue = oldValue.current + 100;
         if (newValue / 1000 >= time) {
           clearInterval(oldValue.interval);
+          console.log("clearing self interval");
           callback();
+          return {
+            current: 0,
+            interval: undefined,
+          };
         }
         return { ...oldValue, current: Math.min(time * 1000, newValue) };
       });
@@ -53,109 +54,105 @@ const Exercise = ({
     });
   };
 
-  const handleTouchStart = (e) => {
-    if (!play) changeCurrentExercise(id);
-  };
-
-  const handleTouchMove = (e) => {
-    if (play) return setDrag(0);
-
-    const newClick = e.touches[0].clientX;
-    setDrag((oldValue) => {
-      if (!click) return oldValue;
-      const delta = newClick - click;
-      const newValue = Math.max(-50, Math.min(50, oldValue + delta));
-      return newValue;
+  const resetTimers = () => {
+    setTimer({
+      current: 0,
+      interval: undefined,
     });
-    setClick(newClick);
+    setRestTimer({
+      current: 0,
+      interval: undefined,
+    });
   };
 
-  const handleTouchEnd = (e) => {
-    setClick(undefined);
-
-    setTouchedCard(id);
-    if (drag < 50 && drag > -50) setDrag(0);
-    if (drag >= 50) {
-      setDrag(0);
-    }
-    if (drag <= -50) {
-      setDrag(0);
-      setIsEdit((oldValue) => !oldValue);
-    }
-
-    if (reps > 0 && play && selected && !pause) {
-      generateTimerInterval(setRestTimer, rest, nextExercise);
-    }
+  const clearIntervals = () => {
+    clearInterval(timer.interval);
+    clearInterval(restTimer.interval);
   };
 
+  // gestionar el play
   useEffect(() => {
+    setIsEdit(false);
     if (!play) {
-      clearInterval(timer.interval);
-      clearInterval(restTimer.interval);
-      if (currentExercise === 0 || currentExercise > id) {
-        setTimer({
-          current: 0,
-          interval: null,
-        });
-        setRestTimer({
-          current: 0,
-          interval: null,
+      clearIntervals();
+      resetTimers();
+    }
+
+    if (play) {
+      clearIntervals();
+      if (selected && time > 0 && !pause) {
+        console.log(name, "intervals generated in 1");
+        generateTimerInterval(setTimer, time, () => {
+          generateTimerInterval(setRestTimer, rest, nextExercise);
         });
       }
-      return;
     }
+    return () => {
+      clearIntervals();
+    };
+  }, [play]);
 
-    setIsEdit(false);
+  useEffect(() => {
+    if (!pause) {
+      if (!play || !selected) return;
 
-    if (!selected) return;
+      if (timer.current / 1000 >= time) {
+        generateTimerInterval(setRestTimer, rest, nextExercise);
+      } else if (restTimer.current === 0) {
+        generateTimerInterval(setTimer, time, () => {
+          generateTimerInterval(setRestTimer, rest, nextExercise);
+        });
+      }
+    } else {
+      clearInterval(timer.interval);
+      clearInterval(restTimer.interval);
+    }
+    return () => {
+      clearInterval(timer.interval);
+      clearInterval(restTimer.interval);
+    };
+  }, [pause]);
 
-    if (time > 0 && !pause) {
+  useEffect(() => {
+    if (play && !pause && selected && time > 0) {
+      console.log(name, "intervals generated in 2", routineId, id, currentExercise);
       generateTimerInterval(setTimer, time, () => {
         generateTimerInterval(setRestTimer, rest, nextExercise);
       });
     }
-  }, [play, currentExercise]);
+    return () => {
+      clearIntervals();
+    };
+  }, [selected, routineLoop]);
 
   useEffect(() => {
-    if (touchedCard !== id) {
-      setDrag(0);
+    if (!touch && reps > 0 && play && selected && !pause) {
+      clearInterval(restTimer.interval);
+      generateTimerInterval(setRestTimer, rest, nextExercise);
+    }
+    return () => {
+      clearInterval(restTimer.interval);
+    };
+  }, [touch]);
+
+
+  useEffect(() => {
+    if (!touch) {
       setIsEdit(false);
     }
   }, [touchedCard]);
 
   useEffect(() => {
-    if (pause) {
-      clearInterval(timer.interval);
-      clearInterval(restTimer.interval);
-    } else {
-      if (!play || !selected) return;
-
-      if (timer.current / 1000 >= time) {
-        generateTimerInterval(setRestTimer, rest, nextExercise);
-        return;
-      }
-      if (restTimer.current === 0) {
-        generateTimerInterval(setTimer, time, () => {
-          generateTimerInterval(setRestTimer, rest, nextExercise);
-        });
-        return;
-      }
+    if (isLeft) {
+      setIsEdit((oldValue) => !oldValue);
     }
-  }, [pause]);
+  }, [isLeft, isRight]);
 
   return (
-    <section
-      className="card-container"
-      style={{
-        display: play && currentExercise > id ? "none" : "flex",
-      }}
-    >
+    <section className="card-container">
       <article
-        className={`exercise-card ${
-          name === "New" ? "exercise-card__new" : ""
-        }`}
+        className={`exercise-card`}
         style={{
-          transform: `translateX(${drag}px)`,
           background: play
             ? `linear-gradient(to right,
             lightgrey ${restTimer.current / rest / 10}%,
@@ -166,13 +163,10 @@ const Exercise = ({
             ${variables.mainColor} ${
                 time > 0 ? timer.current / time / 10 : selected ? 100 : 0
               }%)`
-            : selected
+            : (selected && play) || isEdit
             ? "lightgreen"
             : "",
         }}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
       >
         <section className="card-info">
           <p>{name}</p>
@@ -186,12 +180,12 @@ const Exercise = ({
           <ExerciseForm
             submitFunction={editExercise(id)}
             canDelete={true}
-            cancelFunction={() => navigate("/")}
-            removeFunction={removeExercise}
-            data={exercise}
-            callbackFunction={() => {
+            cancelFunction={() => {
               setIsEdit(false);
             }}
+            removeFunction={removeExercise}
+            data={data}
+            callbackFunction={() => {}}
           />
         )}
       </article>

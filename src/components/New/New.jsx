@@ -1,17 +1,32 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
 import ExerciseForm from "../../shared/ExerciseForm/ExerciseForm";
+import RoutineForm from "../../shared/RoutineForm/RoutineForm";
+import Slider from "../../shared/Slider/Slider";
 import "./New.scss";
 
-const New = ({ addExercise, callback }) => {
-  const navigate = useNavigate();
+const New = ({ addExercise, callback, setIsAdd, routineId }) => {
+  const [isLoop, setIsLoop] = useState(false);
+  const toggleIsLoop = () => {
+    setIsLoop((oldValue) => !oldValue);
+  };
   return (
     <>
-      <ExerciseForm
-        submitFunction={addExercise}
-        cancelFunction={() => navigate("/")}
-        callbackFunction = {callback}
-      />
+      <Slider handleClick={toggleIsLoop} onCriterium={isLoop} />
+      {routineId !== undefined || !isLoop ? (
+        <ExerciseForm
+          submitFunction={addExercise}
+          cancelFunction={() => setIsAdd(false)}
+          callbackFunction={() => setIsAdd(false)}
+          routineId={routineId}
+
+        />
+      ) : (
+        <RoutineForm
+          submitFunction={addExercise}
+          cancelFunction={() => setIsAdd(false)}
+          callbackFunction={() => setIsAdd(false)}
+        />
+      )}
     </>
   );
 };

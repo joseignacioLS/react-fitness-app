@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import DefaultButton from "../DefaultButton/DefaultButton";
-import Slider from "../Slider/Slider";
-import "./ExerciseForm.scss";
+import "./RoutineForm.scss";
 
-const ExerciseForm = ({
+const RoutineForm = ({
   submitFunction,
   cancelFunction,
   removeFunction,
@@ -11,25 +10,14 @@ const ExerciseForm = ({
   canDelete,
   callbackFunction = () => {},
 }) => {
-  const [exerciseType, setExerciseType] = useState(
-    data && data.reps ? "reps" : "time"
-  );
   const [formData, setFormData] = useState(
     data || {
-      id: undefined,
-      type: "exercise",
+      type: "routine",
       name: "",
-      reps: 0,
-      time: 0,
-      rest: 20,
+      loops: 1,
+      data: [],
     }
   );
-
-  const onToggleExerciseType = () => {
-    setExerciseType((oldValue) => {
-      return oldValue === "reps" ? "time" : "reps";
-    });
-  };
 
   const handleInput = (e) => {
     const value = e.target.value;
@@ -41,16 +29,14 @@ const ExerciseForm = ({
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     if (!formData.name) return;
-    if (!formData.time && !formData.reps) return;
-    if (formData.rest < 1) return;
+    if (formData.loops < 1) return;
     submitFunction({
-      id: formData.id,
       name: formData.name,
       type: formData.type,
-      reps: exerciseType === "reps" ? parseInt(formData.reps) : 0,
-      time: exerciseType === "time" ? parseInt(formData.time) : 0,
-      rest: parseInt(formData.rest),
+      loops: parseInt(formData.loops),
+      data: formData.data,
     });
 
     callbackFunction();
@@ -70,49 +56,19 @@ const ExerciseForm = ({
               onChange={handleInput}
             ></input>
           </div>
-          <div className="input-block">
-            <Slider
-              handleClick={onToggleExerciseType}
-              onCriterium={exerciseType === "time"}
-            />
-          </div>
-          {exerciseType === "reps" ? (
-            <div className="input-block">
-              <label htmlFor="reps">Repetitions</label>
-              <input
-                id="reps"
-                type="number"
-                min={0}
-                placeholder="Repetitions"
-                value={formData.reps}
-                onChange={handleInput}
-              ></input>
-            </div>
-          ) : (
-            <div className="input-block">
-              <label htmlFor="time">Duration (seconds)</label>
-              <input
-                id="time"
-                type="number"
-                min={0}
-                placeholder="Time"
-                value={formData.time}
-                onChange={handleInput}
-              ></input>
-            </div>
-          )}
 
           <div className="input-block">
-            <label htmlFor="rest">Rest Time (seconds)</label>
+            <label htmlFor="loops">Loops</label>
             <input
-              id="rest"
+              id="loops"
               type="number"
-              min={1}
-              placeholder="Rest Time"
-              value={formData.rest}
+              min={0}
+              placeholder="Loops"
+              value={formData.loops}
               onChange={handleInput}
             ></input>
           </div>
+
           <section className="form-actions">
             <DefaultButton
               onClickFunction={cancelFunction}
@@ -138,9 +94,7 @@ const ExerciseForm = ({
             />
             {canDelete && (
               <DefaultButton
-                onClickFunction={() => {
-                  removeFunction(data.id);
-                }}
+                onClickFunction={() => removeFunction(data.id)}
                 style={{
                   width: "4rem",
                   height: "2rem",
@@ -148,7 +102,7 @@ const ExerciseForm = ({
                   borderRadius: ".5rem",
                   backgroundColor: "red",
                 }}
-                content="Delete"
+                content="Remove"
               />
             )}
           </section>
@@ -158,4 +112,4 @@ const ExerciseForm = ({
   );
 };
 
-export default ExerciseForm;
+export default RoutineForm;
