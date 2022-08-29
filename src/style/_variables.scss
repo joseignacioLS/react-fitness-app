@@ -1,5 +1,8 @@
 $main-color: rgb(51, 51, 51);
 
+$white-shadow: rgba(255,255,255,.5);
+
 :export {
   mainColor: $main-color;
+  whiteShadow: $white-shadow;
 }

@@ -41,7 +41,10 @@ const DraggableCard = ({
   return (
     <article
       className="card"
-      style={{ ...style, transform: `translateX(${drag}px)` }}
+      style={{
+        ...style,
+        transform: `translateX(${drag > 10 || drag < -10 ? drag : 0}px)`,
+      }}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}

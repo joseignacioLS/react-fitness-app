@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import localStorageService from "./shared/services/localStorageService";
 import { useWakeLock } from "react-screen-wake-lock";
 import DefaultButton from "./shared/DefaultButton/DefaultButton";
+import updateExercisesIds from "./shared/services/exercisesService";
 
 function App() {
   const { request, release } = useWakeLock();
@@ -15,7 +16,6 @@ function App() {
 
   const localStorage = new localStorageService();
 
-  
   const [touchedCard, setTouchedCard] = useState(undefined);
 
   const [totalTime, setTotalTime] = useState({
@@ -26,9 +26,10 @@ function App() {
   const togglePlay = () => {
     setPlay((oldValue) => {
       if (!oldValue) {
-        request()
+        request();
       }
-      return !oldValue});
+      return !oldValue;
+    });
   };
 
   const togglePause = () => {
@@ -46,14 +47,7 @@ function App() {
           tempValue[where].data = [...tempValue[where].data, data];
           newValue = [...tempValue];
         }
-        const updatedValue = newValue.map((v, id) => {
-          if (v.type === "routine") {
-            v.data = v.data.map((v, id) => {
-              return { ...v, id };
-            });
-          }
-          return { ...v, id };
-        });
+        const updatedValue = updateExercisesIds(newValue);
         localStorage.setItem("routine", updatedValue);
         return updatedValue;
       });
@@ -63,7 +57,7 @@ function App() {
   const editExercise = (where = undefined) => {
     return (id) => {
       return (values) => {
-        console.log(where, id, values)
+        console.log(where, id, values);
         setData((oldValue) => {
           let updatedValue;
           if (where === undefined) {
@@ -111,7 +105,7 @@ function App() {
     };
   };
 
-    useEffect(() => {
+  useEffect(() => {
     const routine = localStorage.getItem("routine");
     setData(routine || []);
   }, []);
@@ -123,7 +117,7 @@ function App() {
         current: 0,
         interval: undefined,
       });
-      release()
+      release();
       return;
     }
     if (pause) {
@@ -150,36 +144,38 @@ function App() {
         removeExercise={removeExercise}
         editExercise={editExercise}
         setTotalTime={setTotalTime}
-        endRoutineFunction={() => {setPlay(false)}}
+        endRoutineFunction={() => {
+          setPlay(false);
+        }}
         touchedCard={touchedCard}
       />
 
-      {play && (
-        <>
-          <DefaultButton
-            onClickFunction={togglePause}
-            style={{
-              backgroundColor: pause ? "orange" : "grey",
-              position: "fixed",
-              bottom: "2rem",
-              right: "8rem",
-            }}
-            content={"⏸"}
-          />
-          <p className="counter">{totalTime.current / 1000}</p>
-        </>
-      )}
-      <DefaultButton
-        onClickFunction={togglePlay}
-        style={{
-          zIndex: 10,
-          backgroundColor: play ? "red" : "green",
-          position: "fixed",
-          bottom: "2rem",
-          right: "2rem",
-        }}
-        content={play ? "🛑" : "▶"}
-      />
+      <section className="button-bar">
+        {play && (
+          <>
+            <DefaultButton
+              onClickFunction={togglePause}
+              style={{
+                backgroundColor: pause ? "orange" : "grey",
+                gridArea: "pause",
+              }}
+              content={"⏸"}
+            />
+            <p className="counter" style={{ gridArea: "time" }}>
+              {totalTime.current / 1000}
+            </p>
+          </>
+        )}
+        <DefaultButton
+          onClickFunction={togglePlay}
+          style={{
+            zIndex: 10,
+            backgroundColor: play ? "red" : "green",
+            gridArea: "play",
+          }}
+          content={play ? "🛑" : "▶"}
+        />
+      </section>
     </div>
   );
 }

@@ -30,7 +30,8 @@ const Exercise = ({
   });
 
   const [isEdit, setIsEdit] = useState(false);
-  const selected = currentExercise[0] === routineId && currentExercise[1] === id
+  const selected =
+    currentExercise[0] === routineId && currentExercise[1] === id;
 
   const generateTimerInterval = (setTimer, time, callback = () => {}) => {
     const interval = setInterval(() => {
@@ -115,7 +116,13 @@ const Exercise = ({
 
   useEffect(() => {
     if (play && !pause && selected && time > 0) {
-      console.log(name, "intervals generated in 2", routineId, id, currentExercise);
+      console.log(
+        name,
+        "intervals generated in 2",
+        routineId,
+        id,
+        currentExercise
+      );
       generateTimerInterval(setTimer, time, () => {
         generateTimerInterval(setRestTimer, rest, nextExercise);
       });
@@ -135,7 +142,6 @@ const Exercise = ({
     };
   }, [touch]);
 
-
   useEffect(() => {
     if (!touch) {
       setIsEdit(false);
@@ -153,19 +159,17 @@ const Exercise = ({
       <article
         className={`exercise-card`}
         style={{
-          background: play
-            ? `linear-gradient(to right,
+          background:
+            play &&
+            `linear-gradient(to right,
             lightgrey ${restTimer.current / rest / 10}%,
             orange ${restTimer.current / rest / 10}%,
             orange ${
               time > 0 ? timer.current / time / 10 : selected ? 100 : 0
             }%,
             ${variables.mainColor} ${
-                time > 0 ? timer.current / time / 10 : selected ? 100 : 0
-              }%)`
-            : (selected && play) || isEdit
-            ? "lightgreen"
-            : "",
+              time > 0 ? timer.current / time / 10 : selected ? 100 : 0
+            }%)`,
         }}
       >
         <section className="card-info">
