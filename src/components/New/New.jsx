@@ -4,7 +4,7 @@ import RoutineForm from "../../shared/RoutineForm/RoutineForm";
 import Slider from "../../shared/Slider/Slider";
 import "./New.scss";
 
-const New = ({ addExercise, callback, setIsAdd, routineId }) => {
+const New = ({ callback, setIsAdd, routineId, idLink }) => {
   const [isLoop, setIsLoop] = useState(false);
   const toggleIsLoop = () => {
     setIsLoop((oldValue) => !oldValue);
@@ -12,19 +12,20 @@ const New = ({ addExercise, callback, setIsAdd, routineId }) => {
   return (
     <>
       <Slider handleClick={toggleIsLoop} onCriterium={isLoop} />
-      {routineId !== undefined || !isLoop ? (
+      {!isLoop ? (
         <ExerciseForm
-          submitFunction={addExercise}
+          mode="add"
           cancelFunction={() => setIsAdd(false)}
           callbackFunction={() => setIsAdd(false)}
           routineId={routineId}
-
+          idLink={idLink}
         />
       ) : (
         <RoutineForm
-          submitFunction={addExercise}
+        mode="add"
           cancelFunction={() => setIsAdd(false)}
           callbackFunction={() => setIsAdd(false)}
+          idLink={idLink}
         />
       )}
     </>

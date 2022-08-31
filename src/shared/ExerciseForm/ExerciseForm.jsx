@@ -1,22 +1,25 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { ExerciseContext } from "../../core/contexts/exerciseContext";
 import DefaultButton from "../DefaultButton/DefaultButton";
 import Slider from "../Slider/Slider";
 import "./ExerciseForm.scss";
 
 const ExerciseForm = ({
-  submitFunction,
+  mode,
   cancelFunction,
-  removeFunction,
+  idLink,
   data,
-  canDelete,
   callbackFunction = () => {},
 }) => {
   const [exerciseType, setExerciseType] = useState(
     data && data.reps ? "reps" : "time"
   );
+
+  const { exerciseDispatcher } = useContext(ExerciseContext);
+
   const [formData, setFormData] = useState(
     data || {
-      id: undefined,
+      id: 0,
       type: "exercise",
       name: "",
       reps: 0,
@@ -44,15 +47,20 @@ const ExerciseForm = ({
     if (!formData.name) return;
     if (!formData.time && !formData.reps) return;
     if (formData.rest < 1) return;
-    submitFunction({
-      id: formData.id,
-      name: formData.name,
-      type: formData.type,
-      reps: exerciseType === "reps" ? parseInt(formData.reps) : 0,
-      time: exerciseType === "time" ? parseInt(formData.time) : 0,
-      rest: parseInt(formData.rest),
+    exerciseDispatcher({
+      type: mode,
+      payload: {
+        id: formData.id,
+        name: formData.name,
+        type: formData.type,
+        reps: exerciseType === "reps" ? parseInt(formData.reps) : 0,
+        time: exerciseType === "time" ? parseInt(formData.time) : 0,
+        rest: parseInt(formData.rest),
+      },
+      idLink,
     });
 
+    cancelFunction();
     callbackFunction();
   };
 
@@ -115,17 +123,6 @@ const ExerciseForm = ({
           </div>
           <section className="form-actions">
             <DefaultButton
-              onClickFunction={cancelFunction}
-              style={{
-                width: "4rem",
-                height: "2rem",
-                fontSize: "1rem",
-                borderRadius: ".5rem",
-                backgroundColor: "green",
-              }}
-              content="Close"
-            />
-            <DefaultButton
               onClickFunction={handleSubmit}
               style={{
                 width: "4rem",
@@ -136,10 +133,13 @@ const ExerciseForm = ({
               }}
               content="Save"
             />
-            {canDelete && (
+            {mode === "edit" && (
               <DefaultButton
                 onClickFunction={() => {
-                  removeFunction(data.id);
+                  exerciseDispatcher({
+                    type: "remove",
+                    idLink,
+                  });
                 }}
                 style={{
                   width: "4rem",

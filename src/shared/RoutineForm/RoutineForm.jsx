@@ -1,17 +1,19 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { ExerciseContext } from "../../core/contexts/exerciseContext";
 import DefaultButton from "../DefaultButton/DefaultButton";
 import "./RoutineForm.scss";
 
 const RoutineForm = ({
-  submitFunction,
+  mode,
   cancelFunction,
-  removeFunction,
   data,
-  canDelete,
+  idLink,
   callbackFunction = () => {},
 }) => {
+  const { exerciseDispatcher } = useContext(ExerciseContext);
   const [formData, setFormData] = useState(
     data || {
+      id: 0,
       type: "routine",
       name: "",
       loops: 1,
@@ -32,13 +34,17 @@ const RoutineForm = ({
 
     if (!formData.name) return;
     if (formData.loops < 1) return;
-    submitFunction({
-      name: formData.name,
-      type: formData.type,
-      loops: parseInt(formData.loops),
-      data: formData.data,
+    exerciseDispatcher({
+      type: mode,
+      payload: {
+        id: formData.id,
+        name: formData.name,
+        type: formData.type,
+        loops: parseInt(formData.loops),
+        data: formData.data,
+      },
+      idLink,
     });
-
     callbackFunction();
   };
 
@@ -71,17 +77,6 @@ const RoutineForm = ({
 
           <section className="form-actions">
             <DefaultButton
-              onClickFunction={cancelFunction}
-              style={{
-                width: "4rem",
-                height: "2rem",
-                fontSize: "1rem",
-                borderRadius: ".5rem",
-                backgroundColor: "green",
-              }}
-              content="Close"
-            />
-            <DefaultButton
               onClickFunction={handleSubmit}
               style={{
                 width: "4rem",
@@ -92,9 +87,14 @@ const RoutineForm = ({
               }}
               content="Save"
             />
-            {canDelete && (
+            {mode === "edit" && (
               <DefaultButton
-                onClickFunction={() => removeFunction(data.id)}
+                onClickFunction={() => {
+                  exerciseDispatcher({
+                    type: "remove",
+                    idLink,
+                  });
+                }}
                 style={{
                   width: "4rem",
                   height: "2rem",

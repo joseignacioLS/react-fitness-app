@@ -8,16 +8,14 @@ const Exercise = ({
   data: { id, name, reps, time, rest },
   play,
   pause,
-  currentExercise,
   nextExercise,
   touchedCard,
-  editExercise,
-  removeExercise,
-  routineId,
   isRight,
   isLeft,
   touch,
   routineLoop,
+  idLink,
+  selected,
 }) => {
   const [timer, setTimer] = useState({
     current: 0,
@@ -30,8 +28,6 @@ const Exercise = ({
   });
 
   const [isEdit, setIsEdit] = useState(false);
-  const selected =
-    currentExercise[0] === routineId && currentExercise[1] === id;
 
   const generateTimerInterval = (setTimer, time, callback = () => {}) => {
     const interval = setInterval(() => {
@@ -39,7 +35,6 @@ const Exercise = ({
         const newValue = oldValue.current + 100;
         if (newValue / 1000 >= time) {
           clearInterval(oldValue.interval);
-          console.log("clearing self interval");
           callback();
           return {
             current: 0,
@@ -82,7 +77,6 @@ const Exercise = ({
     if (play) {
       clearIntervals();
       if (selected && time > 0 && !pause) {
-        console.log(name, "intervals generated in 1");
         generateTimerInterval(setTimer, time, () => {
           generateTimerInterval(setRestTimer, rest, nextExercise);
         });
@@ -97,9 +91,9 @@ const Exercise = ({
     if (!pause) {
       if (!play || !selected) return;
 
-      if (timer.current / 1000 >= time) {
+      if (restTimer.current > 0) {
         generateTimerInterval(setRestTimer, rest, nextExercise);
-      } else if (restTimer.current === 0) {
+      } else if (timer.current > 0) {
         generateTimerInterval(setTimer, time, () => {
           generateTimerInterval(setRestTimer, rest, nextExercise);
         });
@@ -116,13 +110,6 @@ const Exercise = ({
 
   useEffect(() => {
     if (play && !pause && selected && time > 0) {
-      console.log(
-        name,
-        "intervals generated in 2",
-        routineId,
-        id,
-        currentExercise
-      );
       generateTimerInterval(setTimer, time, () => {
         generateTimerInterval(setRestTimer, rest, nextExercise);
       });
@@ -149,6 +136,7 @@ const Exercise = ({
   }, [touchedCard]);
 
   useEffect(() => {
+    if (play) return;
     if (isLeft) {
       setIsEdit((oldValue) => !oldValue);
     }
@@ -182,12 +170,11 @@ const Exercise = ({
         </section>
         {isEdit && (
           <ExerciseForm
-            submitFunction={editExercise(id)}
-            canDelete={true}
+            mode="edit"
             cancelFunction={() => {
               setIsEdit(false);
             }}
-            removeFunction={removeExercise}
+            idLink={idLink}
             data={data}
             callbackFunction={() => {}}
           />

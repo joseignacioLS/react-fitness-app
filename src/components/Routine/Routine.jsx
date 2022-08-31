@@ -10,24 +10,19 @@ const playTrackerInitialState = {
   exercise: 0,
   loop: 0,
 };
-
 const Routine = ({
   play,
   pause,
-  data,
-  addExercise,
-  removeExercise,
-  editExercise,
   setTotalTime,
   endRoutineFunction,
   superChangeCurrentExercise,
-  routineId = undefined,
-  routineName = undefined,
-  routineLoops = 1,
   touchedCard,
-  currentRoutine = undefined,
-  isLeft,
-  isRight
+  data,
+  isLeft = false,
+  isRight = false,
+  idLink = [],
+  selected = false,
+  style={}
 }) => {
   const [isAdd, setIsAdd] = useState(false);
 
@@ -39,21 +34,17 @@ const Routine = ({
     setPlayTracker((oldValue) => {
       return { ...oldValue, exercise: id };
     });
-    if (routineName) superChangeCurrentExercise(routineId);
+    if (data.name) superChangeCurrentExercise(data.id);
   };
 
   const nextExercise = () => {
-    console.log("next exercise");
     setPlayTracker((oldValue) => {
-      if (oldValue.exercise + 1 < data.length) {
-        console.log("    routine not ended");
+      if (oldValue.exercise + 1 < data.data.length) {
         return { ...oldValue, exercise: oldValue.exercise + 1 };
       }
-      if (oldValue.loop < routineLoops - 1) {
-        console.log("    loop not ended");
+      if (oldValue.loop < data.loops - 1) {
         return { ...oldValue, exercise: 0, loop: oldValue.loop + 1 };
       } else {
-        console.log("    loop ended");
         endRoutineFunction();
         return playTrackerInitialState;
       }
@@ -67,32 +58,26 @@ const Routine = ({
   }, [play]);
 
   useEffect(() => {
+    if (play) return
     if (isLeft) setIsEdit((oldValue) => !oldValue);
   }, [isLeft]);
 
   return (
-    <div className="routine">
-      {routineName && (
+    <div className="routine" style={style}>
+      {data.name && (
         <p>
-          {routineName}{" "}
-          {play ? `${playTracker.loop + 1} / ${routineLoops}` : ""}
+          {data.name} {play ? `${playTracker.loop + 1} / ${data.loops}` : ""}
         </p>
       )}
       {isEdit && (
         <RoutineForm
-          submitFunction={editExercise()(routineId)}
           cancelFunction={() => setIsEdit(false)}
-          removeFunction={removeExercise()}
-          data={{
-            id: routineId,
-            name: routineName,
-            loops: routineLoops,
-            data: data,
-          }}
-          canDelete={true}
+          idLink={idLink}
+          data={data}
+          mode="edit"
         />
       )}
-      {data.map((ele) => {
+      {data.data.map((ele) => {
         return (
           <DraggableCard key={JSON.stringify(ele)}>
             {ele.type === "exercise" ? (
@@ -100,43 +85,32 @@ const Routine = ({
                 play={play}
                 pause={pause}
                 data={ele}
-                removeExercise={removeExercise(routineId)}
-                editExercise={editExercise(routineId)}
-                currentExercise={[currentRoutine, playTracker.exercise]}
                 touchedCard={touchedCard}
                 nextExercise={nextExercise}
                 changeCurrentExercise={changeCurrentExercise}
                 setTotalTime={setTotalTime}
                 routineLoop={playTracker.loop}
-                routineId={routineId}
+                idLink={[...idLink, ele.id]}
+                selected={selected && playTracker.exercise === ele.id}
               />
             ) : (
               <Routine
                 play={play}
                 pause={pause}
-                data={ele.data}
-                addExercise={addExercise}
-                removeExercise={removeExercise}
-                editExercise={editExercise}
                 setTotalTime={setTotalTime}
                 touchedCard={touchedCard}
-                routineId={ele.id}
-                routineName={ele.name}
-                routineLoops={ele.loops}
+                data={ele}
                 endRoutineFunction={nextExercise}
-                currentRoutine={playTracker.exercise}
                 superChangeCurrentExercise={changeCurrentExercise}
+                idLink={[...idLink, ele.id]}
+                selected={selected && playTracker.exercise === ele.id}
               />
             )}
           </DraggableCard>
         );
       })}
       {!play && isAdd ? (
-        <New
-          addExercise={addExercise(routineId)}
-          setIsAdd={setIsAdd}
-          routineId={routineId}
-        />
+        <New setIsAdd={setIsAdd} routineId={data.id} idLink={idLink} />
       ) : (
         <>
           {!play && !pause && (

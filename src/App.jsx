@@ -1,20 +1,20 @@
 import "./App.scss";
 import Routine from "./components/Routine/Routine";
-import { useEffect, useState } from "react";
-import localStorageService from "./shared/services/localStorageService";
+import { useContext, useEffect, useState } from "react";
 import { useWakeLock } from "react-screen-wake-lock";
 import DefaultButton from "./shared/DefaultButton/DefaultButton";
-import updateExercisesIds from "./shared/services/exercisesService";
+import { ExerciseContext } from "./core/contexts/exerciseContext";
+import Modal from "./core/Modal/Modal";
+import { ModalContext } from "./core/contexts/modalContext";
+import { formatSeconds } from "./core/services/timeService";
 
 function App() {
   const { request, release } = useWakeLock();
 
+  const { modalData, modalDispatcher } = useContext(ModalContext);
+
   const [play, setPlay] = useState(false);
   const [pause, setPause] = useState(false);
-
-  const [data, setData] = useState([]);
-
-  const localStorage = new localStorageService();
 
   const [touchedCard, setTouchedCard] = useState(undefined);
 
@@ -23,92 +23,47 @@ function App() {
     interval: undefined,
   });
 
+  const { exerciseData } = useContext(ExerciseContext);
+
   const togglePlay = () => {
-    setPlay((oldValue) => {
-      if (!oldValue) {
-        request();
-      }
-      return !oldValue;
-    });
+    if (!play) {
+      request();
+      modalDispatcher({
+        type: "countdown",
+        payload: {
+          time: 3000,
+          cb: () => {
+            setPlay(true);
+          },
+        },
+      });
+    } else {
+      setPlay(false);
+    }
   };
 
   const togglePause = () => {
-    setPause((oldValue) => !oldValue);
-  };
-
-  const addExercise = (where = undefined) => {
-    return (data) => {
-      setData((oldValue) => {
-        let newValue = [...oldValue, data];
-        if (where === undefined) {
-          newValue = [...oldValue, data];
-        } else {
-          let tempValue = [...oldValue];
-          tempValue[where].data = [...tempValue[where].data, data];
-          newValue = [...tempValue];
-        }
-        const updatedValue = updateExercisesIds(newValue);
-        localStorage.setItem("routine", updatedValue);
-        return updatedValue;
-      });
-    };
-  };
-
-  const editExercise = (where = undefined) => {
-    return (id) => {
-      return (values) => {
-        console.log(where, id, values);
-        setData((oldValue) => {
-          let updatedValue;
-          if (where === undefined) {
-            updatedValue = oldValue.map((v) => {
-              return v.id === id ? values : v;
+    if (!pause) {
+      setPause(true);
+      modalDispatcher({
+        type: "set",
+        payload: {
+          text: "Paused",
+          action: () => {
+            modalDispatcher({
+              type: "countdown",
+              payload: {
+                time: 5000,
+                cb: () => {
+                  setPause(false);
+                },
+              },
             });
-          } else {
-            updatedValue = [...oldValue];
-            updatedValue[where].data[id] = values;
-          }
-
-          localStorage.setItem("routine", updatedValue);
-          return updatedValue;
-        });
-      };
-    };
-  };
-
-  const removeExercise = (where = undefined) => {
-    return (id) => {
-      setData((oldValue) => {
-        let newValue;
-        if (where === undefined) {
-          newValue = oldValue.filter((v) => {
-            return v.id !== id;
-          });
-        } else {
-          newValue = [...oldValue];
-          newValue[where].data = newValue[where].data.filter((v) => {
-            return v.id !== id;
-          });
-        }
-        const updatedValue = newValue.map((v, id) => {
-          if (v.type === "routine") {
-            v.data = v.data.map((v, id) => {
-              return { ...v, id };
-            });
-          }
-          return { ...v, id };
-        });
-
-        localStorage.setItem("routine", updatedValue);
-        return updatedValue;
+          },
+        },
       });
-    };
+    }
   };
-
-  useEffect(() => {
-    const routine = localStorage.getItem("routine");
-    setData(routine || []);
-  }, []);
 
   useEffect(() => {
     if (!play) {
@@ -120,6 +75,7 @@ function App() {
       release();
       return;
     }
+
     if (pause) {
       clearInterval(totalTime.interval);
     } else {
@@ -135,20 +91,30 @@ function App() {
   }, [play, pause]);
 
   return (
-    <div className="App">
-      <Routine
-        play={play}
-        pause={pause}
-        data={data}
-        addExercise={addExercise}
-        removeExercise={removeExercise}
-        editExercise={editExercise}
-        setTotalTime={setTotalTime}
-        endRoutineFunction={() => {
-          setPlay(false);
-        }}
-        touchedCard={touchedCard}
-      />
+    <main className="App">
+      <section className="routine-container">
+        <Routine
+          play={play}
+          pause={pause}
+          data={exerciseData[0]}
+          endRoutineFunction={() => {
+            setPlay(false);
+            modalDispatcher({
+              type: "set",
+              payload: {
+                text: `Training finished!`,
+              },
+            });
+          }}
+          superChangeCurrentExercise={() => {}}
+          touchedCard={touchedCard}
+          setTotalTime={setTotalTime}
+          routineId={exerciseData[0].id}
+          routineName={exerciseData[0].name}
+          idLink={[exerciseData[0].id]}
+          selected={true}
+        />
+      </section>
 
       <section className="button-bar">
         {play && (
@@ -162,7 +128,7 @@ function App() {
               content={"⏸"}
             />
             <p className="counter" style={{ gridArea: "time" }}>
-              {totalTime.current / 1000}
+              {formatSeconds(totalTime.current / 1000)}
             </p>
           </>
         )}
@@ -176,7 +142,8 @@ function App() {
           content={play ? "🛑" : "▶"}
         />
       </section>
-    </div>
+      {modalData.visible && <Modal />}
+    </main>
   );
 }
 

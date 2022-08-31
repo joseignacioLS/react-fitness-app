@@ -1,4 +1,4 @@
-import updateExercisesIds from "./exercisesService";
+import { updateExercisesIds } from "./exerciseService";
 
 class localStorageService {
   getItem(key) {

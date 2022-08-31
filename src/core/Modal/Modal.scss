@@ -1,0 +1,40 @@
+.modal {
+  z-index: 10;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  grid-template-rows: 1fr auto 1fr;
+  grid-template-areas:
+    ". . ."
+    ". pop ."
+    ". . .";
+
+  backdrop-filter: blur(3px);
+  &__pop-up {
+    grid-area: pop;
+    background-color: white;
+
+    text-align: center;
+
+    border-radius: 1rem;
+
+    min-width: 5rem;
+
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+    padding: 1rem;
+    gap: 1rem;
+
+    button {
+      outline: none;
+      border: 0;
+      background-color: transparent;
+    }
+  }
+}
