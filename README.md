@@ -2,7 +2,7 @@
 
 This is a personal Front-End project developed with React.
 
-Try it here: joses-fit-app.netlify.app
+Try it here: https://joses-fit-app.netlify.app/
 
 ## Description
 
@@ -31,4 +31,4 @@ This project has been developed with React. It contains:
 
 ## How to run it locally?
 
-Download the repo, npm init 
+Download the repo, npm init and npm start
