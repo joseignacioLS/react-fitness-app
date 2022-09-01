@@ -15,6 +15,10 @@
   overflow-x: hidden;
   overflow-y: auto;
 
+  &__title {
+    font-size: 1.25rem;
+  }
+
   .counter {
     position: fixed;
     bottom: 2rem;

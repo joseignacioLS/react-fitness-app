@@ -30,7 +30,6 @@ const reducer = (state, action) => {
         },
       };
     case "set":
-      console.log("set");
       return {
         ...INITIAL_STATE,
         ...action.payload,

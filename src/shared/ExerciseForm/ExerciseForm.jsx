@@ -3,7 +3,7 @@ import { ExerciseContext } from "../../core/contexts/exerciseContext";
 import DefaultButton from "../DefaultButton/DefaultButton";
 import Slider from "../Slider/Slider";
 import "./ExerciseForm.scss";
-
+import { Repeat, Timer } from "phosphor-react";
 const ExerciseForm = ({
   mode,
   cancelFunction,
@@ -82,6 +82,8 @@ const ExerciseForm = ({
             <Slider
               handleClick={onToggleExerciseType}
               onCriterium={exerciseType === "time"}
+              rightContent={<Timer size={32} weight="fill" />}
+              leftContent={<Repeat size={32} />}
             />
           </div>
           {exerciseType === "reps" ? (
@@ -122,6 +124,19 @@ const ExerciseForm = ({
             ></input>
           </div>
           <section className="form-actions">
+            {mode === "add" && (
+              <DefaultButton
+                onClickFunction={cancelFunction}
+                style={{
+                  width: "4rem",
+                  height: "2rem",
+                  fontSize: "1rem",
+                  borderRadius: ".5rem",
+                  backgroundColor: "green",
+                }}
+                content="Close"
+              />
+            )}
             <DefaultButton
               onClickFunction={handleSubmit}
               style={{

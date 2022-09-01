@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { ModalContext } from "../contexts/modalContext";
 import "./Modal.scss";
+import { CheckCircle } from "phosphor-react";
 
 const Modal = () => {
   const { modalData, modalDispatcher } = useContext(ModalContext);
@@ -15,7 +16,6 @@ const Modal = () => {
   useEffect(() => {
     if (!modalData.countdown) return;
     if (modalData.countdown.time <= 0) return;
-    console.log("making progress")
     setCountdown((oldValue) => {
       const interval = setInterval(() => {
         setCountdown((oldValue) => {
@@ -57,7 +57,9 @@ const Modal = () => {
         ) : (
           <>
             <p>{modalData.text}</p>
-            <button onClick={handleClick}>👍</button>
+            <button onClick={handleClick}>
+              <CheckCircle size={32} weight="fill" />
+            </button>
           </>
         )}
       </div>

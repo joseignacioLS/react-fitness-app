@@ -3,6 +3,7 @@ import ExerciseForm from "../../shared/ExerciseForm/ExerciseForm";
 import RoutineForm from "../../shared/RoutineForm/RoutineForm";
 import Slider from "../../shared/Slider/Slider";
 import "./New.scss";
+import { PersonSimpleRun, Table } from "phosphor-react";
 
 const New = ({ callback, setIsAdd, routineId, idLink }) => {
   const [isLoop, setIsLoop] = useState(false);
@@ -11,7 +12,12 @@ const New = ({ callback, setIsAdd, routineId, idLink }) => {
   };
   return (
     <>
-      <Slider handleClick={toggleIsLoop} onCriterium={isLoop} />
+      <Slider
+        handleClick={toggleIsLoop}
+        onCriterium={isLoop}
+        leftContent={<PersonSimpleRun size={32} />}
+        rightContent={<Table size={32} />}
+      />
       {!isLoop ? (
         <ExerciseForm
           mode="add"
@@ -22,7 +28,7 @@ const New = ({ callback, setIsAdd, routineId, idLink }) => {
         />
       ) : (
         <RoutineForm
-        mode="add"
+          mode="add"
           cancelFunction={() => setIsAdd(false)}
           callbackFunction={() => setIsAdd(false)}
           idLink={idLink}

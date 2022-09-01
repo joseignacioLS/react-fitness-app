@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import "./Exercise.scss";
 import variables from "../../../style/_variables.scss";
 import ExerciseForm from "../../../shared/ExerciseForm/ExerciseForm";
+import Beeper from "../../../core/services/soundService";
+
+const beeper = new Beeper();
 
 const Exercise = ({
   data,
@@ -34,6 +37,7 @@ const Exercise = ({
       setTimer((oldValue) => {
         const newValue = oldValue.current + 100;
         if (newValue / 1000 >= time) {
+          beeper.beep();
           clearInterval(oldValue.interval);
           callback();
           return {
@@ -123,6 +127,7 @@ const Exercise = ({
     if (!touch && reps > 0 && play && selected && !pause) {
       clearInterval(restTimer.interval);
       generateTimerInterval(setRestTimer, rest, nextExercise);
+      beeper.beep();
     }
     return () => {
       clearInterval(restTimer.interval);
@@ -155,14 +160,22 @@ const Exercise = ({
             orange ${
               time > 0 ? timer.current / time / 10 : selected ? 100 : 0
             }%,
-            ${variables.mainColor} ${
+            ${variables.shadow} ${
               time > 0 ? timer.current / time / 10 : selected ? 100 : 0
             }%)`,
         }}
       >
         <section className="card-info">
-          <p>{name}</p>
-          <p>
+          <p
+            className="card-info__name"
+            onClick={() => {
+              if (play) return;
+              setIsEdit(oldValue => !oldValue);
+            }}
+          >
+            {name}
+          </p>
+          <p className="card-info__cond">
             {reps > 0
               ? reps + " reps"
               : `${play ? timer.current / 1000 + " /" : ""} ${time}` + " secs"}

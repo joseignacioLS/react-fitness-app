@@ -76,6 +76,17 @@ const RoutineForm = ({
           </div>
 
           <section className="form-actions">
+           {mode === "add" && <DefaultButton
+              onClickFunction={cancelFunction}
+              style={{
+                width: "4rem",
+                height: "2rem",
+                fontSize: "1rem",
+                borderRadius: ".5rem",
+                backgroundColor: "green",
+              }}
+              content="Close"
+            />}
             <DefaultButton
               onClickFunction={handleSubmit}
               style={{
@@ -89,12 +100,10 @@ const RoutineForm = ({
             />
             {mode === "edit" && (
               <DefaultButton
-                onClickFunction={() => {
-                  exerciseDispatcher({
-                    type: "remove",
-                    idLink,
-                  });
-                }}
+                onClickFunction={() => {exerciseDispatcher({
+                  type:"remove",
+                  idLink
+                })}}
                 style={{
                   width: "4rem",
                   height: "2rem",

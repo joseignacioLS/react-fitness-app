@@ -21,6 +21,19 @@
     grid-area: routine;
   }
 
+  .manage-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+
+    padding: 0.5rem;
+
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas: "b1 . b2";
+  }
+
   .button-bar {
     z-index: 5;
     grid-area: buttons;

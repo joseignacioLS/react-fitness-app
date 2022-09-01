@@ -1,3 +1,5 @@
+@import "../../style/variables";
+
 .slider {
   position: relative;
   cursor: pointer;
@@ -7,19 +9,39 @@
   background-color: rgb(235, 232, 232);
   transition: 0.4s;
 
-  &:before {
+  .tick {
     position: absolute;
-    content: "";
     height: 3.5rem;
     width: 3.5rem;
     border-radius: 50%;
     left: 4px;
     bottom: 4px;
-    background-color: rgb(255, 178, 127);
     transition: 0.4s;
+    background-color: $main-color;
+
+    display: grid;
+    justify-content: center;
+    align-items: center;
+    &__on{
+      transform: translateX(4rem);
+
+    }
+
   }
-  &__on:before {
-    transform: translateX(4rem);
-    background-color: aquamarine;
-  }
+
+  // &:before {
+  //   position: absolute;
+  //   content: "";
+  //   height: 3.5rem;
+  //   width: 3.5rem;
+  //   border-radius: 50%;
+  //   left: 4px;
+  //   bottom: 4px;
+  //   background-color: rgb(255, 178, 127);
+  //   transition: 0.4s;
+  // }
+  // &__on:before {
+  //   transform: translateX(4rem);
+  //   background-color: aquamarine;
+  // }
 }

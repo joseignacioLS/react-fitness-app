@@ -43,7 +43,7 @@ const DraggableCard = ({
       className="card"
       style={{
         ...style,
-        transform: `translateX(${drag > 10 || drag < -10 ? drag : 0}px)`,
+        //transform: `translateX(${drag > 10 || drag < -10 ? drag : 0}px)`,
       }}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}

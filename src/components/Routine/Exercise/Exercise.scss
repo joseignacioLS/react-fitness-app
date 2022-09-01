@@ -1,7 +1,6 @@
 @import "../../../style/variables";
 
 .card-container {
-  
   user-select: none;
 
   .exercise-card {
@@ -18,7 +17,6 @@
     align-items: center;
     margin-left: 0;
 
-    background-color: $main-color;
     border-radius: 1rem;
 
     .card-info {
@@ -26,6 +24,10 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+
+      &__name {
+        text-transform: capitalize;
+      }
     }
   }
 }

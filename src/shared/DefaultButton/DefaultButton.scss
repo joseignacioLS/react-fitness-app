@@ -1,6 +1,6 @@
 .default-btn {
-  width: 4rem;
-  height: 4rem;
+  width: 3rem;
+  height: 3rem;
   border-radius: 50%;
 
   font-size: 2rem;
@@ -9,8 +9,9 @@
   justify-content: center;
   align-items: center;
 
-  background-color: green;
   border: none;
   outline: none;
   color: white;
+
+  cursor: pointer;
 }

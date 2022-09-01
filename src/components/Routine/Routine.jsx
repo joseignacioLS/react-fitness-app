@@ -5,24 +5,27 @@ import DefaultButton from "../../shared/DefaultButton/DefaultButton";
 import DraggableCard from "../../shared/DraggableCard/DraggableCard";
 import New from "../New/New";
 import RoutineForm from "../../shared/RoutineForm/RoutineForm";
+import { PlusCircle } from "phosphor-react";
 
 const playTrackerInitialState = {
   exercise: 0,
   loop: 0,
 };
+
 const Routine = ({
   play,
   pause,
-  setTotalTime,
+  data,
+  nameMod,
   endRoutineFunction,
   superChangeCurrentExercise,
   touchedCard,
-  data,
-  isLeft = false,
-  isRight = false,
+  setTotalTime,
   idLink = [],
   selected = false,
-  style={}
+  isLeft = false,
+  isRight = false,
+  style = {},
 }) => {
   const [isAdd, setIsAdd] = useState(false);
 
@@ -58,15 +61,25 @@ const Routine = ({
   }, [play]);
 
   useEffect(() => {
-    if (play) return
+    if (play) return;
     if (isLeft) setIsEdit((oldValue) => !oldValue);
   }, [isLeft]);
 
   return (
     <div className="routine" style={style}>
       {data.name && (
-        <p>
-          {data.name} {play ? `${playTracker.loop + 1} / ${data.loops}` : ""}
+        <p
+          className="routine__title"
+          onClick={() => {
+            if (play) return;
+            setIsEdit((oldValue) => !oldValue);
+          }}
+        >
+          {data.name + (nameMod !== undefined ? nameMod : "")}{" "}
+          {data.loops > 1 &&
+            (play
+              ? `(${playTracker.loop + 1} / ${data.loops})`
+              : `(${data.loops} loops)`)}
         </p>
       )}
       {isEdit && (
@@ -118,7 +131,7 @@ const Routine = ({
               onClickFunction={() => {
                 setIsAdd(true);
               }}
-              content="+"
+              content={<PlusCircle size={"100%"} weight="fill" />}
             />
           )}
         </>

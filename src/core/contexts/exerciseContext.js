@@ -16,6 +16,19 @@ const INITIAL_STATE = localStorage.getItem("routine") || [
 const reducer = (state, action) => {
   let newState;
   switch (action.type) {
+    case "newroutine":
+      newState = updateExercisesIds([
+        ...state,
+        {
+          id: 0,
+          name: "routine",
+          type: "routine",
+          loops: 1,
+          data: [],
+        },
+      ]);
+      localStorage.setItem("routine", newState);
+      return newState;
     case "add":
       newState = updateExercisesIds([
         ...recursiveSearch(state, action.idLink, "add", action.payload),
