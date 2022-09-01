@@ -53,11 +53,11 @@ const RoutineForm = ({
       {formData?.name !== undefined && (
         <form className="form">
           <div className="input-block">
-            <label htmlFor="name">Exercise Name</label>
+            <label htmlFor="name">Block Name</label>
             <input
               id="name"
               type="text"
-              placeholder="Exercise"
+              placeholder="Block"
               value={formData.name}
               onChange={handleInput}
             ></input>
