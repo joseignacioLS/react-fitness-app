@@ -17,16 +17,14 @@ const reducer = (state, action) => {
   let newState;
   switch (action.type) {
     case "newroutine":
-      newState = updateExercisesIds([
-        ...state,
-        {
-          id: 0,
-          name: "routine",
-          type: "routine",
-          loops: 1,
-          data: [],
-        },
-      ]);
+      const newRoutine = action.payload || {
+        id: 0,
+        name: "routine",
+        type: "routine",
+        loops: 1,
+        data: [],
+      };
+      newState = updateExercisesIds([...state, newRoutine]);
       localStorage.setItem("routine", newState);
       return newState;
     case "add":

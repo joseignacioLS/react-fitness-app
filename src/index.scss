@@ -30,6 +30,12 @@ input {
   text-align: center;
   width: 100%;
 }
-p{
+p {
   user-select: none;
+}
+
+a {
+  text-decoration: underline;
+  color: inherit;
+  cursor: pointer;
 }

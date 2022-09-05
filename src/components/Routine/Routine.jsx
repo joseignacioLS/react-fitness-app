@@ -5,7 +5,7 @@ import DefaultButton from "../../shared/DefaultButton/DefaultButton";
 import DraggableCard from "../../shared/DraggableCard/DraggableCard";
 import New from "../New/New";
 import RoutineForm from "../../shared/RoutineForm/RoutineForm";
-import { PlusCircle } from "phosphor-react";
+import { Pencil, PlusCircle } from "phosphor-react";
 
 const playTrackerInitialState = {
   exercise: 0,
@@ -80,6 +80,7 @@ const Routine = ({
             (play
               ? `(${playTracker.loop + 1} / ${data.loops})`
               : `(${data.loops} loops)`)}
+          {!play && <Pencil size={20} />}
         </p>
       )}
       {isEdit && (

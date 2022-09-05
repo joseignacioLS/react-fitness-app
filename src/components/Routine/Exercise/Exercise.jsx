@@ -3,6 +3,7 @@ import "./Exercise.scss";
 import variables from "../../../style/_variables.scss";
 import ExerciseForm from "../../../shared/ExerciseForm/ExerciseForm";
 import Beeper from "../../../core/services/soundService";
+import { Pencil } from "phosphor-react";
 
 const beeper = new Beeper();
 
@@ -170,10 +171,11 @@ const Exercise = ({
             className="card-info__name"
             onClick={() => {
               if (play) return;
-              setIsEdit(oldValue => !oldValue);
+              setIsEdit((oldValue) => !oldValue);
             }}
           >
             {name}
+            {!play && <Pencil size={20} />}
           </p>
           <p className="card-info__cond">
             {reps > 0

@@ -13,12 +13,15 @@ import {
   Pause,
   ArrowFatLeft,
   ArrowFatRight,
+  Info,
 } from "phosphor-react";
 import Beeper from "./core/services/soundService";
+import { useNavigate } from "react-router-dom";
 
 const beeper = new Beeper();
 
 function App() {
+  const navigate = useNavigate();
   const { request, release } = useWakeLock();
 
   const [currentRoutine, setCurrentRoutine] = useState(0);
@@ -115,10 +118,7 @@ function App() {
   }, [play, pause]);
 
   return (
-    <main
-      className="App"
-      style={{ height: window.innerHeight }}
-    >
+    <main className="App" style={{ height: window.innerHeight }}>
       {currentRoutine != undefined && (
         <>
           <section className="routine-container">
@@ -147,7 +147,10 @@ function App() {
             <DefaultButton
               onClickFunction={() => {
                 if (play) return;
-                if (exerciseData[currentRoutine].data.length === 0) {
+                if (
+                  exerciseData[currentRoutine].data.length === 0 &&
+                  currentRoutine > 0
+                ) {
                   exerciseDispatcher({
                     type: "remove",
                     idLink: [currentRoutine],
@@ -177,7 +180,7 @@ function App() {
       )}
 
       <section className="button-bar">
-        {play && (
+        {play ? (
           <>
             <DefaultButton
               onClickFunction={togglePause}
@@ -190,11 +193,93 @@ function App() {
               {formatSeconds(totalTime.current / 1000)}
             </p>
           </>
+        ) : (
+          <>
+            <DefaultButton
+              onClickFunction={() => {
+                navigate("/about");
+              }}
+              style={{
+                gridArea: "pause",
+              }}
+              content={<Info size={"100%"} color="white" weight="fill" />}
+            />
+            <p
+              style={{ gridArea: "time", textAlign: "center", color: "white" }}
+              className="routine-code"
+              onClick={() => {
+                // primero checkeo si hay una rutina creada
+                // si es asi la copio al portapapeles
+
+                if (exerciseData[currentRoutine].data.length > 0) {
+                  navigator.clipboard.writeText(
+                    JSON.stringify({
+                      isValid: true,
+                      data: { ...exerciseData[currentRoutine] },
+                    })
+                  );
+                  modalDispatcher({
+                    type: "set",
+                    payload: {
+                      text: "Code copied to clipboard!",
+                    },
+                  });
+                } else {
+                  // si no hay rutina copiada, saco la que haya
+                  // en el portapapeles
+                  navigator.clipboard.readText().then((data) => {
+                    let parsedData;
+                    try {
+                      parsedData = JSON.parse(data);
+                    } catch (err) {
+                      modalDispatcher({
+                        type: "set",
+                        payload: {
+                          text: "The clipboard content does not match the routine format",
+                        },
+                      });
+                      return;
+                    }
+
+                    if (!parsedData.isValid) {
+                      modalDispatcher({
+                        type: "set",
+                        payload: {
+                          text: "The clipboard content does not match the routine format",
+                        },
+                      });
+                      return;
+                    }
+                    // si es valida se la paso al dispatcher
+                    exerciseDispatcher({
+                      type: "newroutine",
+                      payload: {
+                        ...parsedData.data,
+                      },
+                    });
+                    exerciseDispatcher({
+                      type: "remove",
+                      idLink: [currentRoutine],
+                    });
+                    modalDispatcher({
+                      type: "set",
+                      payload: {
+                        text: "Routine added!",
+                      },
+                    });
+                  });
+                }
+              }}
+            >
+              {exerciseData[currentRoutine].data.length > 0
+                ? "Export"
+                : "Import"}
+            </p>
+          </>
         )}
         <DefaultButton
           onClickFunction={togglePlay}
           style={{
-            zIndex: 10,
             gridArea: "play",
           }}
           content={
