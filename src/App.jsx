@@ -102,6 +102,7 @@ function App() {
       release();
       return;
     }
+    request();
 
     if (pause) {
       clearInterval(totalTime.interval);
@@ -117,8 +118,18 @@ function App() {
     }
   }, [play, pause]);
 
+  const [windowH, setWindowH] = useState(window.innerHeight);
+  useEffect(() => {
+    const updateWindowH = () => {
+      setWindowH(window.innerHeight);
+    };
+
+    window.addEventListener("resize", updateWindowH);
+    return () => window.removeEventListener("resize", updateWindowH);
+  }, []);
+
   return (
-    <main className="App" style={{ height: window.innerHeight }}>
+    <main className="App" style={{ height: windowH }}>
       {currentRoutine != undefined && (
         <>
           <section className="routine-container">
