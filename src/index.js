@@ -6,17 +6,20 @@ import ExerciseProvider from "./core/contexts/exerciseContext";
 import ModalProvider from "./core/contexts/modalContext";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import About from "./components/About/About";
+import PlayProvider from "./core/contexts/playContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <ModalProvider>
-    <ExerciseProvider>
-      <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<App/>}/>
-        <Route path="/about" element={<About/>}/>
-      </Routes>
-      </BrowserRouter>
-    </ExerciseProvider>
-  </ModalProvider>
+  <PlayProvider>
+    <ModalProvider>
+      <ExerciseProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<App />} />
+            <Route path="/about" element={<About />} />
+          </Routes>
+        </BrowserRouter>
+      </ExerciseProvider>
+    </ModalProvider>
+  </PlayProvider>
 );

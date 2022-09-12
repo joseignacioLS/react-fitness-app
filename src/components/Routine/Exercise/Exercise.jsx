@@ -4,14 +4,14 @@ import variables from "../../../style/_variables.scss";
 import ExerciseForm from "../../../shared/ExerciseForm/ExerciseForm";
 import Beeper from "../../../core/services/soundService";
 import { Pencil } from "phosphor-react";
+import { useContext } from "react";
+import { PlayContext } from "../../../core/contexts/playContext";
 
 const beeper = new Beeper();
 
 const Exercise = ({
   data,
   data: { id, name, reps, time, rest },
-  play,
-  pause,
   nextExercise,
   touchedCard,
   isRight,
@@ -21,6 +21,9 @@ const Exercise = ({
   idLink,
   selected,
 }) => {
+  const {
+    playData: { play, pause },
+  } = useContext(PlayContext);
   const [timer, setTimer] = useState({
     current: 0,
     interval: undefined,

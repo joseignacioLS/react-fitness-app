@@ -17,6 +17,7 @@ import {
 } from "phosphor-react";
 import Beeper from "./core/services/soundService";
 import { useNavigate } from "react-router-dom";
+import { PlayContext } from "./core/contexts/playContext";
 
 const beeper = new Beeper();
 
@@ -28,8 +29,7 @@ function App() {
 
   const { modalData, modalDispatcher } = useContext(ModalContext);
 
-  const [play, setPlay] = useState(false);
-  const [pause, setPause] = useState(false);
+  const {playData: {play, pause}, playDispatcher} = useContext(PlayContext);
 
   const [touchedCard, setTouchedCard] = useState(undefined);
 
@@ -58,19 +58,25 @@ function App() {
         payload: {
           time: 3000,
           cb: () => {
-            setPlay(true);
+            playDispatcher({
+              type:"play"
+            })
             beeper.beep();
           },
         },
       });
     } else {
-      setPlay(false);
+      playDispatcher({
+        type: "stop"
+      })
     }
   };
 
   const togglePause = () => {
     if (!pause) {
-      setPause(true);
+      playDispatcher({
+        type:"pause"
+      })
       modalDispatcher({
         type: "set",
         payload: {
@@ -81,7 +87,9 @@ function App() {
               payload: {
                 time: 5000,
                 cb: () => {
-                  setPause(false);
+                  playDispatcher({
+                    type:"resume"
+                  })
                   beeper.beep();
                 },
               },
@@ -134,12 +142,12 @@ function App() {
         <>
           <section className="routine-container">
             <Routine
-              play={play}
-              pause={pause}
               data={exerciseData[currentRoutine]}
               nameMod={currentRoutine}
               endRoutineFunction={() => {
-                setPlay(false);
+                playDispatcher({
+                  type:"stop"
+                })
                 modalDispatcher({
                   type: "set",
                   payload: {

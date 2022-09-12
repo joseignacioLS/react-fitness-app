@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Exercise from "./Exercise/Exercise";
 import "./Routine.scss";
 import DefaultButton from "../../shared/DefaultButton/DefaultButton";
@@ -6,6 +6,7 @@ import DraggableCard from "../../shared/DraggableCard/DraggableCard";
 import New from "../New/New";
 import RoutineForm from "../../shared/RoutineForm/RoutineForm";
 import { Pencil, PlusCircle } from "phosphor-react";
+import { PlayContext } from "../../core/contexts/playContext";
 
 const playTrackerInitialState = {
   exercise: 0,
@@ -13,8 +14,6 @@ const playTrackerInitialState = {
 };
 
 const Routine = ({
-  play,
-  pause,
   data,
   nameMod,
   endRoutineFunction,
@@ -27,6 +26,10 @@ const Routine = ({
   isRight = false,
   style = {},
 }) => {
+  const {
+    playData: { play, pause },
+  } = useContext(PlayContext);
+
   const [isAdd, setIsAdd] = useState(false);
 
   const [isEdit, setIsEdit] = useState(false);
@@ -96,8 +99,6 @@ const Routine = ({
           <DraggableCard key={JSON.stringify(ele)}>
             {ele.type === "exercise" ? (
               <Exercise
-                play={play}
-                pause={pause}
                 data={ele}
                 touchedCard={touchedCard}
                 nextExercise={nextExercise}
@@ -109,8 +110,6 @@ const Routine = ({
               />
             ) : (
               <Routine
-                play={play}
-                pause={pause}
                 setTotalTime={setTotalTime}
                 touchedCard={touchedCard}
                 data={ele}
