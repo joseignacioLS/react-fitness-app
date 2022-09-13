@@ -1,20 +1,35 @@
-.faq {
+.about {
   padding: 2rem;
   color: white;
-  list-style: none;
-  &__item {
-    .question {
-      font-size: 1.25rem;
-      text-transform: uppercase;
-      border-bottom: 1px solid white;
 
-      &::before {
-        content: ">";
+  &__title {
+    font-size: 2rem;
+  }
+
+  .user-options {
+    display:grid;
+    grid-template-areas: 
+    "sound soundC";
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+  }
+
+  .faq {
+    list-style: none;
+    &__item {
+      .question {
+        font-size: 1.25rem;
+        text-transform: uppercase;
+        border-bottom: 1px solid white;
+
+        &::before {
+          content: ">";
+        }
       }
-    }
-    .answer {
-      text-align: justify;
-      color: rgba(255,255,255,.75);
+      .answer {
+        text-align: justify;
+        color: rgba(255, 255, 255, 0.75);
+      }
     }
   }
 }

@@ -6,6 +6,7 @@ import Beeper from "../../../core/services/soundService";
 import { Pencil } from "phosphor-react";
 import { useContext } from "react";
 import { PlayContext } from "../../../core/contexts/playContext";
+import { UserOptionsContext } from "../../../core/contexts/userOptionsContext";
 
 const beeper = new Beeper();
 
@@ -50,6 +51,8 @@ const Exercise = ({
   });
 
   const [isEdit, setIsEdit] = useState(false);
+
+  const {userOptions} = useContext(UserOptionsContext)
 
   const resetTimers = () => {
     setTimer((oldValue) => {
@@ -128,14 +131,14 @@ const Exercise = ({
     if (!touch && reps > 0 && play && selected && !pause) {
       clearInterval(restTimer.interval);
       generateTimerInterval(setRestTimer);
-      beeper.beep();
+      if (userOptions.sound) beeper.beep();
     }
   }, [touch]);
 
   // end of cycle
   useEffect(() => {
     if (timer.limit > 0 && timer.current >= timer.limit * 1000) {
-      beeper.beep();
+      if (userOptions.sound) beeper.beep();
       clearInterval(timer.interval);
       timer.callback();
     }
@@ -143,7 +146,7 @@ const Exercise = ({
 
   useEffect(() => {
     if (restTimer.current >= restTimer.limit * 1000) {
-      beeper.beep();
+      if (userOptions.sound) beeper.beep();
       clearInterval(restTimer.interval);
       restTimer.callback();
     }

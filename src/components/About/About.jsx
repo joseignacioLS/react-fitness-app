@@ -4,6 +4,9 @@ import { useNavigate } from "react-router-dom";
 import DefaultButton from "../../shared/DefaultButton/DefaultButton";
 import { ArrowFatLeft } from "phosphor-react";
 import { useState } from "react";
+import Slider from "../../shared/Slider/Slider";
+import { useContext } from "react";
+import { UserOptionsContext } from "../../core/contexts/userOptionsContext";
 
 const faq = [
   {
@@ -41,22 +44,42 @@ const faq = [
     ),
   },
   {
-    q:"Contact",
-    a:"I am open to collaborate, just send me an email to ls.joseignacio(gmail.com)"
-  }
+    q: "Contact",
+    a: "I am open to collaborate, just send me an email to ls.joseignacio(gmail.com)",
+  },
 ];
 
 const About = () => {
   const [selectedQ, setSelectedQ] = useState(undefined);
+  const { userOptions, userOptionsDispatcher } = useContext(UserOptionsContext);
   const navigate = useNavigate();
   return (
-    <div>
+    <div className="about">
       <DefaultButton
         content={<ArrowFatLeft size={"100%"} />}
         onClickFunction={() => {
           navigate("/");
         }}
       />
+      <p className="about__title">OPTIONS</p>
+      <div className="user-options">
+        <p>Sound</p>
+        <Slider
+          handleClick={() => {
+            userOptionsDispatcher({
+              type:"modify",
+              payload: {
+                sound: !userOptions.sound
+              }
+            })
+          }}
+          onCriterium={userOptions.sound}
+          rightContent={"on"}
+          leftContent={"off"}
+          colorOn={"grey"}
+        ></Slider>
+      </div>
+      <p className="about__title">ABOUT</p>
       <ul className="faq">
         {faq.map(({ q, a }, i) => {
           return (

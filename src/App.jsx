@@ -18,6 +18,7 @@ import {
 import Beeper from "./core/services/soundService";
 import { useNavigate } from "react-router-dom";
 import { PlayContext } from "./core/contexts/playContext";
+import { UserOptionsContext } from "./core/contexts/userOptionsContext";
 
 const beeper = new Beeper();
 
@@ -41,6 +42,8 @@ function App() {
 
   const { exerciseData, exerciseDispatcher } = useContext(ExerciseContext);
 
+  const {userOptions} = useContext(UserOptionsContext)
+
   const togglePlay = () => {
     if (!play) {
       if (exerciseData[currentRoutine].data.length === 0) {
@@ -62,7 +65,7 @@ function App() {
             playDispatcher({
               type:"play"
             })
-            beeper.beep();
+            if (userOptions.sound) beeper.beep();
           },
         },
       });
@@ -91,7 +94,7 @@ function App() {
                   playDispatcher({
                     type:"resume"
                   })
-                  beeper.beep();
+                  if (userOptions.sound) beeper.beep();
                 },
               },
             });

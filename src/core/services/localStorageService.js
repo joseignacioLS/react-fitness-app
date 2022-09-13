@@ -4,7 +4,10 @@ class localStorageService {
   getItem(key) {
     const recovered = JSON.parse(window.localStorage.getItem(key));
     if (!recovered) return null;
-    return updateExercisesIds(recovered);
+    if (key === "routine") {
+      return updateExercisesIds(recovered);
+    }
+    return recovered
   }
   setItem(key, value) {
     window.localStorage.setItem(key, JSON.stringify(value));
