@@ -23,6 +23,7 @@ const beeper = new Beeper();
 
 function App() {
   const navigate = useNavigate();
+  
   const { request, release } = useWakeLock();
 
   const [currentRoutine, setCurrentRoutine] = useState(0);

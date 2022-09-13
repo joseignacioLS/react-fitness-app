@@ -18,12 +18,9 @@ const Routine = ({
   nameMod,
   endRoutineFunction,
   superChangeCurrentExercise,
-  touchedCard,
   setTotalTime,
   idLink = [],
   selected = false,
-  isLeft = false,
-  isRight = false,
   style = {},
 }) => {
   const {
@@ -63,11 +60,6 @@ const Routine = ({
     }
   }, [play]);
 
-  useEffect(() => {
-    if (play) return;
-    if (isLeft) setIsEdit((oldValue) => !oldValue);
-  }, [isLeft]);
-
   return (
     <div className="routine" style={style}>
       {data.name && (
@@ -100,7 +92,6 @@ const Routine = ({
             {ele.type === "exercise" ? (
               <Exercise
                 data={ele}
-                touchedCard={touchedCard}
                 nextExercise={nextExercise}
                 changeCurrentExercise={changeCurrentExercise}
                 setTotalTime={setTotalTime}
@@ -111,7 +102,6 @@ const Routine = ({
             ) : (
               <Routine
                 setTotalTime={setTotalTime}
-                touchedCard={touchedCard}
                 data={ele}
                 endRoutineFunction={nextExercise}
                 superChangeCurrentExercise={changeCurrentExercise}

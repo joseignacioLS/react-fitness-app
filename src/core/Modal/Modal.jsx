@@ -5,35 +5,30 @@ import { CheckCircle } from "phosphor-react";
 
 const Modal = () => {
   const { modalData, modalDispatcher } = useContext(ModalContext);
+
   const handleClick = (e) => {
     modalDispatcher({
       type: "action",
     });
   };
 
-  const [countdown, setCountdown] = useState({});
+  const [countdown, setCountdown] = useState({
+    cb: () => {},
+    current: undefined,
+    time: undefined,
+    interval: null,
+  });
 
   useEffect(() => {
     if (!modalData.countdown) return;
     if (modalData.countdown.time <= 0) return;
-    setCountdown((oldValue) => {
+    setCountdown(() => {
       const interval = setInterval(() => {
         setCountdown((oldValue) => {
           const newValue = oldValue.current - 100;
-          if (newValue > 0) {
-            return {
-              ...oldValue,
-              current: oldValue.current - 100,
-            };
-          }
-          clearInterval(oldValue.interval);
-          oldValue.cb();
-          handleClick();
           return {
-            current: 0,
-            time: 0,
-            interval: undefined,
-            cb: () => {},
+            ...oldValue,
+            current: oldValue.current - 100,
           };
         });
       }, 100);
@@ -45,6 +40,14 @@ const Modal = () => {
       };
     });
   }, [modalData.countdown]);
+
+  useEffect(() => {
+    if (countdown.current <= 0) {
+      clearInterval(countdown.interval);
+      countdown.cb();
+      handleClick();
+    }
+  }, [countdown.current]);
 
   return (
     <div className="modal">

@@ -9,13 +9,23 @@ import { PlayContext } from "../../../core/contexts/playContext";
 
 const beeper = new Beeper();
 
+const generateTimerInterval = (setter) => {
+  const interval = setInterval(() => {
+    setter((oldValue) => {
+      const newValue = oldValue.current + 100;
+      return { ...oldValue, current: newValue };
+    });
+  }, 100);
+
+  setter((oldValue) => {
+    return { ...oldValue, interval };
+  });
+};
+
 const Exercise = ({
   data,
-  data: { id, name, reps, time, rest },
+  data: { name, reps, time, rest },
   nextExercise,
-  touchedCard,
-  isRight,
-  isLeft,
   touch,
   routineLoop,
   idLink,
@@ -24,54 +34,49 @@ const Exercise = ({
   const {
     playData: { play, pause },
   } = useContext(PlayContext);
+
   const [timer, setTimer] = useState({
     current: 0,
+    limit: time,
     interval: undefined,
+    callback: () => generateTimerInterval(setRestTimer),
   });
 
   const [restTimer, setRestTimer] = useState({
     current: 0,
+    limit: rest,
     interval: undefined,
+    callback: nextExercise,
   });
 
   const [isEdit, setIsEdit] = useState(false);
 
-  const generateTimerInterval = (setTimer, time, callback = () => {}) => {
-    const interval = setInterval(() => {
-      setTimer((oldValue) => {
-        const newValue = oldValue.current + 100;
-        if (newValue / 1000 >= time) {
-          beeper.beep();
-          clearInterval(oldValue.interval);
-          callback();
-          return {
-            current: 0,
-            interval: undefined,
-          };
-        }
-        return { ...oldValue, current: Math.min(time * 1000, newValue) };
-      });
-    }, 100);
-
-    setTimer((oldValue) => {
-      return { ...oldValue, interval };
-    });
-  };
-
   const resetTimers = () => {
-    setTimer({
-      current: 0,
-      interval: undefined,
+    setTimer((oldValue) => {
+      return {
+        ...oldValue,
+        current: 0,
+        interval: undefined,
+      };
     });
-    setRestTimer({
-      current: 0,
-      interval: undefined,
+    setRestTimer((oldValue) => {
+      return {
+        ...oldValue,
+        current: 0,
+        interval: undefined,
+      };
     });
   };
 
   const clearIntervals = () => {
     clearInterval(timer.interval);
     clearInterval(restTimer.interval);
+    setTimer((oldValue) => {
+      return { ...oldValue, interval: null };
+    });
+    setRestTimer((oldValue) => {
+      return { ...oldValue, interval: null };
+    });
   };
 
   // gestionar el play
@@ -85,9 +90,7 @@ const Exercise = ({
     if (play) {
       clearIntervals();
       if (selected && time > 0 && !pause) {
-        generateTimerInterval(setTimer, time, () => {
-          generateTimerInterval(setRestTimer, rest, nextExercise);
-        });
+        generateTimerInterval(setTimer);
       }
     }
     return () => {
@@ -100,27 +103,21 @@ const Exercise = ({
       if (!play || !selected) return;
 
       if (restTimer.current > 0) {
-        generateTimerInterval(setRestTimer, rest, nextExercise);
+        generateTimerInterval(setRestTimer);
       } else if (timer.current > 0) {
-        generateTimerInterval(setTimer, time, () => {
-          generateTimerInterval(setRestTimer, rest, nextExercise);
-        });
+        generateTimerInterval(setTimer);
       }
     } else {
-      clearInterval(timer.interval);
-      clearInterval(restTimer.interval);
+      clearIntervals();
     }
     return () => {
-      clearInterval(timer.interval);
-      clearInterval(restTimer.interval);
+      clearIntervals();
     };
   }, [pause]);
 
   useEffect(() => {
     if (play && !pause && selected && time > 0) {
-      generateTimerInterval(setTimer, time, () => {
-        generateTimerInterval(setRestTimer, rest, nextExercise);
-      });
+      generateTimerInterval(setTimer);
     }
     return () => {
       clearIntervals();
@@ -130,26 +127,27 @@ const Exercise = ({
   useEffect(() => {
     if (!touch && reps > 0 && play && selected && !pause) {
       clearInterval(restTimer.interval);
-      generateTimerInterval(setRestTimer, rest, nextExercise);
+      generateTimerInterval(setRestTimer);
       beeper.beep();
     }
-    return () => {
-      clearInterval(restTimer.interval);
-    };
   }, [touch]);
 
+  // end of cycle
   useEffect(() => {
-    if (!touch) {
-      setIsEdit(false);
+    if (timer.limit > 0 && timer.current >= timer.limit * 1000) {
+      beeper.beep();
+      clearInterval(timer.interval);
+      timer.callback();
     }
-  }, [touchedCard]);
+  }, [timer.current]);
 
   useEffect(() => {
-    if (play) return;
-    if (isLeft) {
-      setIsEdit((oldValue) => !oldValue);
+    if (restTimer.current >= restTimer.limit * 1000) {
+      beeper.beep();
+      clearInterval(restTimer.interval);
+      restTimer.callback();
     }
-  }, [isLeft, isRight]);
+  }, [restTimer.current]);
 
   return (
     <section className="card-container">
