@@ -6,7 +6,7 @@ export const UserOptionsContext = createContext();
 const localStorage = new localStorageService();
 
 const INITIAL_STATE = localStorage.getItem("userOptions") || {
-  sound: false,
+  sound: true,
 };
 
 const reducer = (state, action) => {

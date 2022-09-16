@@ -140,7 +140,17 @@ const Exercise = ({
     if (timer.limit > 0 && timer.current >= timer.limit * 1000) {
       if (userOptions.sound) beeper.beep();
       clearInterval(timer.interval);
+      
       timer.callback();
+
+      console.log("resetting first timer");
+      setTimer((oldValue) => {
+        return {
+          ...oldValue,
+          current: 0,
+          interval: undefined,
+        };
+      });
     }
   }, [timer.current]);
 
@@ -149,6 +159,13 @@ const Exercise = ({
       if (userOptions.sound) beeper.beep();
       clearInterval(restTimer.interval);
       restTimer.callback();
+      setRestTimer((oldValue) => {
+        return {
+          ...oldValue,
+          current: 0,
+          interval: undefined,
+        };
+      });
     }
   }, [restTimer.current]);
 
