@@ -7,8 +7,10 @@ import { Pencil } from "phosphor-react";
 import { useContext } from "react";
 import { PlayContext } from "../../../core/contexts/playContext";
 import { UserOptionsContext } from "../../../core/contexts/userOptionsContext";
+import Speaker from "../../../core/services/voiceService";
 
 const beeper = new Beeper();
+const speaker = new Speaker();
 
 const generateTimerInterval = (setter) => {
   const interval = setInterval(() => {
@@ -94,6 +96,7 @@ const Exercise = ({
       clearIntervals();
       if (selected && time > 0 && !pause) {
         generateTimerInterval(setTimer);
+        if (userOptions.voice) speaker.speak(name);
       }
     }
     return () => {
@@ -121,6 +124,7 @@ const Exercise = ({
   useEffect(() => {
     if (play && !pause && selected && time > 0) {
       generateTimerInterval(setTimer);
+      if (userOptions.voice) speaker.speak(name);
     }
     return () => {
       clearIntervals();

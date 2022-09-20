@@ -7,6 +7,7 @@ const localStorage = new localStorageService();
 
 const INITIAL_STATE = localStorage.getItem("userOptions") || {
   sound: true,
+  voice: false,
 };
 
 const reducer = (state, action) => {

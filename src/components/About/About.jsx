@@ -79,6 +79,23 @@ const About = () => {
           colorOn={"grey"}
         ></Slider>
       </div>
+      <div className="user-options">
+        <p>Voice</p>
+        <Slider
+          handleClick={() => {
+            userOptionsDispatcher({
+              type:"modify",
+              payload: {
+                voice: !userOptions.voice
+              }
+            })
+          }}
+          onCriterium={userOptions.voice}
+          rightContent={"on"}
+          leftContent={"off"}
+          colorOn={"grey"}
+        ></Slider>
+      </div>
       <p className="about__title">ABOUT</p>
       <ul className="faq">
         {faq.map(({ q, a }, i) => {
