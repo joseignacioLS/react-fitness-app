@@ -67,13 +67,28 @@ const About = () => {
         <Slider
           handleClick={() => {
             userOptionsDispatcher({
-              type:"modify",
+              type: "modify",
               payload: {
-                sound: !userOptions.sound
-              }
-            })
+                sound: !userOptions.sound,
+              },
+            });
           }}
           onCriterium={userOptions.sound}
+          rightContent={"on"}
+          leftContent={"off"}
+          colorOn={"grey"}
+        ></Slider>
+        <p>Voice</p>
+        <Slider
+          handleClick={() => {
+            userOptionsDispatcher({
+              type: "modify",
+              payload: {
+                voice: !userOptions.voice,
+              },
+            });
+          }}
+          onCriterium={userOptions.voice}
           rightContent={"on"}
           leftContent={"off"}
           colorOn={"grey"}
@@ -83,14 +98,15 @@ const About = () => {
       <ul className="faq">
         {faq.map(({ q, a }, i) => {
           return (
-            <li
-              className="faq__item"
-              key={q}
-              onClick={() => {
-                selectedQ === i ? setSelectedQ(undefined) : setSelectedQ(i);
-              }}
-            >
-              <p className="question">{q}</p>
+            <li className="faq__item" key={q}>
+              <p
+                className="question"
+                onClick={() => {
+                  selectedQ === i ? setSelectedQ(undefined) : setSelectedQ(i);
+                }}
+              >
+                {q}
+              </p>
               {selectedQ === i && <p className="answer">{a}</p>}
             </li>
           );
