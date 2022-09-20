@@ -9,8 +9,11 @@
   .user-options {
     display:grid;
     grid-template-areas: 
-    "sound soundC";
+    "sound soundC"
+    ". ."
+    "voice voiceC";
     grid-template-columns: 1fr 1fr;
+    row-gap: 7px;
     align-items: center;
   }
 

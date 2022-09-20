@@ -54,7 +54,7 @@ const Exercise = ({
 
   const [isEdit, setIsEdit] = useState(false);
 
-  const {userOptions} = useContext(UserOptionsContext)
+  const { userOptions } = useContext(UserOptionsContext);
 
   const resetTimers = () => {
     setTimer((oldValue) => {
@@ -94,9 +94,11 @@ const Exercise = ({
 
     if (play) {
       clearIntervals();
-      if (selected && time > 0 && !pause) {
-        generateTimerInterval(setTimer);
+      if (!pause && selected) {
         if (userOptions.voice) speaker.speak(name);
+        if (time > 0) {
+          generateTimerInterval(setTimer);
+        }
       }
     }
     return () => {
@@ -122,9 +124,11 @@ const Exercise = ({
   }, [pause]);
 
   useEffect(() => {
-    if (play && !pause && selected && time > 0) {
-      generateTimerInterval(setTimer);
+    if (play && !pause && selected) {
       if (userOptions.voice) speaker.speak(name);
+      if (time > 0) {
+        generateTimerInterval(setTimer);
+      }
     }
     return () => {
       clearIntervals();
@@ -144,7 +148,7 @@ const Exercise = ({
     if (timer.limit > 0 && timer.current >= timer.limit * 1000) {
       if (userOptions.sound) beeper.beep();
       clearInterval(timer.interval);
-      
+
       timer.callback();
 
       console.log("resetting first timer");

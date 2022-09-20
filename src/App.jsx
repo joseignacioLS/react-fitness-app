@@ -186,7 +186,7 @@ function App() {
             />
             <DefaultButton
               onClickFunction={() => {
-                if (play) return;
+                if (play || exerciseData[currentRoutine].data.length === 0) return;
                 if (currentRoutine + 1 >= exerciseData.length)
                   exerciseDispatcher({
                     type: "newroutine",
